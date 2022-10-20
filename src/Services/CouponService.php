@@ -61,14 +61,14 @@ class CouponService extends CouponValidityService
                 "code"               => $array["coupon_code"],
                 "type"               => $array["discount_type"],
                 "amount"             => $array["discount_amount"],
-                "minimum_spend"      => $array["minimum_spend"],
-                "maximum_spend"      => $array["maximum_spend"],
+                "minimum_spend"      => isset($array["minimum_spend"]) ? $array["minimum_spend"] : null,
+                "maximum_spend"      => isset($array["maximum_spend"]) ? $array["maximum_spend"] : null,
                 "start_date"         => $array["start_date"],
                 "end_date"           => $array["end_date"],
-                "use_limit"          => $array["use_limit"],
-                "same_ip_limit"      => $array["use_same_ip_limit"],
-                "use_limit_per_user" => $array['user_limit'],
-                "use_device"         => $array['use_device']
+                "use_limit"          => isset($array["use_limit"]) ? $array["use_limit"] : null,
+                "same_ip_limit"      => isset($array["use_same_ip_limit"]) ? $array["use_same_ip_limit"] : null,
+                "use_limit_per_user" => isset($array['user_limit']) ? $array['user_limit'] : null,
+                "use_device"         => isset($array['use_device']) ? $array['use_device'] : null
             ]);
     }
 

@@ -138,19 +138,19 @@ class CouponValidityService
         }
 
         if ($coupon->start_date >= Carbon::today()->toDateTimeString() || $coupon->end_date < Carbon::today()->toDateTimeString()) {
-            throw new CouponException("Coupon applied failed! This coupon has expired.", 500);
+            throw new CouponException("Coupon apply failed! This coupon has expired.", 500);
         }
 
         if ($coupon->use_limit_per_user) {
             $couponHistories = $coupon->couponHistories->where("user_id", $userId);
             if ($couponHistories && $couponHistories->count() == $coupon->use_limit_per_user) {
-                throw new CouponException("Coupon applied failed! You have exceeded the usage limit.", 500);
+                throw new CouponException("Coupon apply failed! You have exceeded the usage limit.", 500);
             }
         }
 
         if ($coupon->use_limit) {
             if ($coupon->couponHistories->count() && $coupon->couponHistories->count() == $coupon->use_limit) {
-                throw new CouponException("Coupon applied failed! Because of exceeding the usage limit.", 500);
+                throw new CouponException("Coupon apply failed! Because of exceeding the usage limit.", 500);
             }
         }
 

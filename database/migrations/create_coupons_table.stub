@@ -14,7 +14,7 @@ class CreateCouponsTable extends Migration
     public function up()
     {
         if (!Schema::hasTable('coupons')) {
-            Schema::create('users', function (Blueprint $table) {
+            Schema::create('coupons', function (Blueprint $table) {
                 $table->id();
                 $table->string('object_type');
                 $table->string('code');
@@ -30,6 +30,7 @@ class CreateCouponsTable extends Migration
                 $table->string("use_device")->nullable();
                 $table->enum("multiple_use", ["yes", "no"])->default("no");
                 $table->integer("total_use")->default(0);
+                $table->integer("status")->default(0);
                 $table->timestamps();
             });
         }

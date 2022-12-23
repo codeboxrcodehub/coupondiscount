@@ -187,10 +187,20 @@ class CouponValidityService
             }
         }
 
+        $discount_amount = 0;
+        if ($coupon->type == 'fixed') {
+            $discount_amount = floatval($coupon->amount);
+        } else {
+            $discount_percentage = floatval($coupon->amount);
+            $discount_amount     = ($discount_percentage / 100) * floatval($amount);
+        }
+
         return [
-            "coupon_code" => $coupon->code,
-            "type"        => $coupon->type,
-            "amount"      => $coupon->amount,
+            "coupon_code"              => $coupon->code,
+            "type"                     => $coupon->type,
+            "amount"                   => $coupon->amount,
+            "discount_amount"          => $discount_amount,
+            "use_with_multiple_coupon" => $coupon->multiple_use,
         ];
 
     }

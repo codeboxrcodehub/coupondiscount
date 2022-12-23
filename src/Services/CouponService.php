@@ -14,7 +14,18 @@ use Codeboxr\CouponDiscount\Exceptions\CouponHistoryValidationException;
 
 class CouponService extends CouponValidityService
 {
+    /**
+     * @var bool|\Illuminate\Database\Connection
+     */
+    protected $connection = false;
 
+    /**
+     * CouponService constructor.
+     *
+     * @param array $connection
+     *
+     * @throws \Exception
+     */
     public function __construct(array $connection = [])
     {
         if (!class_exists("Illuminate\Foundation\Application")) {
@@ -35,7 +46,18 @@ class CouponService extends CouponValidityService
 
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
+            $this->connection = $capsule->getConnection();
         }
+    }
+
+    /**
+     * Coupon list by eloquent ORM
+     *
+     * @return Builder
+     */
+    public function list()
+    {
+        return Coupon::query();
     }
 
     /**
@@ -68,7 +90,8 @@ class CouponService extends CouponValidityService
                 "use_limit"          => isset($array["use_limit"]) ? $array["use_limit"] : null,
                 "same_ip_limit"      => isset($array["use_same_ip_limit"]) ? $array["use_same_ip_limit"] : null,
                 "use_limit_per_user" => isset($array['user_limit']) ? $array['user_limit'] : null,
-                "use_device"         => isset($array['use_device']) ? $array['use_device'] : null
+                "use_device"         => isset($array['use_device']) ? $array['use_device'] : null,
+                "status"             => isset($array['status']) ? $array['status'] : 0
             ]);
     }
 
@@ -102,7 +125,7 @@ class CouponService extends CouponValidityService
      *
      * @param array $data
      *
-     * @return bool
+     * @return array
      * @throws CouponException|CouponValidationException
      */
     public function apply(array $data)
@@ -142,7 +165,8 @@ class CouponService extends CouponValidityService
                     "discount_amount" => $discountAmount,
                     "user_ip"         => $ipaddress,
                 ]);
-                return true;
+
+                return $couponValidity;
             } catch (\Exception $e) {
                 throw new CouponException($e->getMessage(), $e->getCode());
             }
@@ -164,7 +188,11 @@ class CouponService extends CouponValidityService
         $this->historyValidation($data);
 
         try {
-            DB::beginTransaction();
+            if ($this->connection) {
+                $this->connection->beginTransaction();
+            } else {
+                DB::beginTransaction();
+            }
 
             $object_type = "product";
             if (isset($array['object_type']) && !empty($array['object_type'])) {
@@ -181,14 +209,23 @@ class CouponService extends CouponValidityService
                     "user_ip"         => isset($data['user_ip']) ? $data['user_ip'] : null,
                 ]);;
 
-            $coupon            = Coupon::query()->find($data['order_id']);
+            $coupon            = Coupon::query()->find($data["coupon_id"]);
             $coupon->total_use = $coupon->total_use + 1;
             $coupon->save();
 
-            DB::commit();
+            if ($this->connection) {
+                $this->connection->commit();
+            } else {
+                DB::commit();
+            }
+
             return $couponHistory;
         } catch (\Exception $e) {
-            DB::rollBack();
+            if ($this->connection) {
+                $this->connection->rollBack();
+            } else {
+                DB::rollBack();
+            }
             throw new CouponException($e->getMessage(), $e->getCode());
         }
     }

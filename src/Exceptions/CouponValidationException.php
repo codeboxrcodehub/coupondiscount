@@ -5,6 +5,12 @@ namespace Codeboxr\CouponDiscount\Exceptions;
 use Exception;
 use Throwable;
 
+/**
+ * Coupon Validation error exception
+ *
+ * Class CouponValidationException
+ * @package Codeboxr\CouponDiscount\Exceptions
+ */
 class CouponValidationException extends Exception
 {
 
@@ -17,14 +23,5 @@ class CouponValidationException extends Exception
             parent::__construct($message, $code, $previous);
         }
     }
-
-    /*public function render()
-    {
-        return [
-            'error'   => true,
-            "code"    => $this->code,
-            'message' => $this->message
-        ];
-    }*/
 
 }

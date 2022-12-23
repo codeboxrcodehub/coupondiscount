@@ -3,6 +3,7 @@
 namespace Codeboxr\CouponDiscount;
 
 use Illuminate\Support\ServiceProvider;
+use Codeboxr\CouponDiscount\Services\CouponService;
 
 class CouponDiscountServiceProvider extends ServiceProvider
 {
@@ -22,7 +23,6 @@ class CouponDiscountServiceProvider extends ServiceProvider
         ], 'migrations');
     }
 
-
     /**
      * Register application services
      *
@@ -30,7 +30,9 @@ class CouponDiscountServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->app->bind("coupon", function () {
+            return new CouponService();
+        });
     }
 
 }

@@ -49,6 +49,41 @@ class CouponValidityService
     }
 
     /**
+     * Coupon update validation
+     *
+     * @param array $array
+     *
+     * @throws CouponValidationException
+     */
+    protected function updateValidation($array)
+    {
+        if (!is_array($array)) {
+            throw new \TypeError("Argument must be of the type array");
+        }
+
+        if (!count($array)) {
+            throw new CouponValidationException("Invalid data!", 422);
+        }
+
+        if (!in_array($array["discount_type"], ["fixed", "percentage"])) {
+            throw new CouponValidationException("discount_type must be fixed or percentage value", 422);
+        }
+
+        if (isset($array['use_limit']) && gettype($array['use_limit']) != "integer") {
+            throw new CouponValidationException("use_limit accepted integer value", 422);
+        }
+
+        if (isset($array['use_same_ip_limit']) && gettype($array['use_same_ip_limit']) != "integer") {
+            throw new CouponValidationException("use_same_ip_limit accepted integer value", 422);
+        }
+
+        if (isset($array['user_limit']) && gettype($array['user_limit']) != "integer") {
+            throw new CouponValidationException("user_limit accepted integer value", 422);
+        }
+
+    }
+
+    /**
      * Coupon history validation
      *
      * @param array $array

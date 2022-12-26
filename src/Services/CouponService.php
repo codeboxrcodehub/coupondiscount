@@ -96,6 +96,54 @@ class CouponService extends CouponValidityService
             ]);
     }
 
+
+    /**
+     * Coupon information update update
+     *
+     * @param array $array
+     * @param int $id
+     *
+     * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|Model
+     * @throws CouponException
+     * @throws CouponValidationException
+     */
+    public function update($array, $id)
+    {
+        $this->updateValidation($array);
+
+        $object_type = "product";
+        if (isset($array['object_type'])) {
+            $object_type = $array['object_type'];
+        }
+
+        $coupon = Coupon::query()->find($id);
+        if (!$coupon) {
+            throw new CouponException("Coupon not found");
+        }
+
+        $data = [
+            "object_type"        => $object_type,
+            "code"               => isset($array["coupon_code"]) ? $array["coupon_code"] : $coupon->code,
+            "type"               => isset($array["discount_type"]) ? $array["discount_type"] : $coupon->type,
+            "amount"             => isset($array["discount_amount"]) ? $array["discount_amount"] : $coupon->amount,
+            "minimum_spend"      => isset($array["minimum_spend"]) ? $array["minimum_spend"] : $coupon->minimum_spend,
+            "maximum_spend"      => isset($array["maximum_spend"]) ? $array["maximum_spend"] : $coupon->maximum_spend,
+            "start_date"         => isset($array["start_date"]) ? $array["start_date"] : $coupon->start_date,
+            "end_date"           => isset($array["end_date"]) ? $array["end_date"] : $coupon->end_date,
+            "use_limit"          => isset($array["use_limit"]) ? $array["use_limit"] : $coupon->use_limit,
+            "same_ip_limit"      => isset($array["use_same_ip_limit"]) ? $array["use_same_ip_limit"] : $coupon->same_ip_limit,
+            "use_limit_per_user" => isset($array['user_limit']) ? $array['user_limit'] : $coupon->use_limit_per_user,
+            "use_device"         => isset($array['use_device']) ? $array['use_device'] : $coupon->use_device,
+            "multiple_use"       => isset($array['multiple_use']) ? $array['multiple_use'] : $coupon->multiple_use,
+            "status"             => isset($array['status']) ? $array['status'] : $coupon->status
+        ];
+
+        $coupon->update($data);
+
+        return $coupon;
+
+    }
+
     /**
      * Coupon remove
      *

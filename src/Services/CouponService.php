@@ -188,29 +188,19 @@ class CouponService extends CouponValidityService
         $deviceName = isset($data['device_name']) ? $data['device_name'] : null;
         $ipaddress  = isset($data['ip_address']) ? $data['ip_address'] : null;
 
-        $coupon = Coupon::query()->where("code", $code)->first();
-        if (!$coupon) {
-            throw new CouponException("Invalid coupon code!", 500);
-        }
-
         // check applied coupon code code validity
-        $couponValidity = $this->validity($coupon->id, $amount, $userId, $deviceName, $ipaddress);
+        $couponValidity = $this->validity($code, $amount, $userId, $deviceName, $ipaddress);
 
         if (count($couponValidity)) {
             try {
-                // calculate discount amount
-                $discountAmount = 0;
-                if ($coupon->type == "fixed") {
-                    $discountAmount = $coupon->amount;
-                } else {
-                    $discountAmount = ($coupon->amount * $amount) / 100;
-                }
+
+                $discountAmount = isset($couponValidity["discount_amount"]) ? $couponValidity["discount_amount"] : 0;
 
                 $couponHistory = $this->addHistory([
                     "user_id"         => $userId,
-                    "coupon_id"       => $coupon->id,
+                    "coupon_id"       => $couponValidity['id'],
                     "order_id"        => $orderId,
-                    "object_type"     => $coupon->object_type,
+                    "object_type"     => $couponValidity['object_type'],
                     "discount_amount" => $discountAmount,
                     "user_ip"         => $ipaddress,
                 ]);

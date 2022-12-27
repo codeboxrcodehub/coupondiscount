@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Codeboxr\CouponDiscount\Services\CouponService remove($couponId)
  * @method static \Codeboxr\CouponDiscount\Services\CouponService apply(array $data)
  * @method static \Codeboxr\CouponDiscount\Services\CouponService addHistory(array $data)
+ * @method static \Codeboxr\CouponDiscount\Services\CouponService applyValidation(array $data)
+ * @method static \Codeboxr\CouponDiscount\Services\CouponService validity(string $couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null)
  *
  * @see \Codeboxr\CouponDiscount\Services\CouponService
  */

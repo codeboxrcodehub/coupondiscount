@@ -174,7 +174,7 @@ class CouponService extends CouponValidityService
      * @param array $data
      *
      * @return array
-     * @throws CouponException|CouponValidationException
+     * @throws CouponException|CouponValidationException|\Throwable
      */
     public function apply(array $data)
     {

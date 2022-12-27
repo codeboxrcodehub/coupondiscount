@@ -182,6 +182,11 @@ class CouponValidityService
         }
 
 
+        // check coupon status
+        if ($coupon->status != 1) {
+            throw new CouponException("Coupon apply failed! Coupon code id deactivate.", 500);
+        }
+
         // check coupon start date validity
         if ($coupon->start_date > Carbon::today()->toDateTimeString()) {
             throw new CouponException("Coupon apply failed! Invalid coupon code.", 500);
@@ -201,19 +206,19 @@ class CouponValidityService
         }
 
         // check total coupon applied limitation
-        if ($coupon->use_limit) {
+        if ($coupon->use_limit && $coupon->use_limit > 0) {
             if ($coupon->couponHistories->count() && $coupon->couponHistories->count() == $coupon->use_limit) {
                 throw new CouponException("The coupon apply failed! Because of overcoming the total usage limit.", 500);
             }
         }
 
         // check minimum order amount to applied  this coupon
-        if ($coupon->minimum_spend && $coupon->minimum_spend > $amount) {
+        if ($coupon->minimum_spend > 0 && $coupon->minimum_spend > $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon minimum {$coupon->minimum_spend} amount is required", 500);
         }
 
         // check maximum order amount to applied  this coupon
-        if ($coupon->maximum_spend && $coupon->maximum_spend < $amount) {
+        if ($coupon->maximum_spend > 0 && $coupon->maximum_spend < $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon maximum {$coupon->minimum_spend} amount is required", 500);
         }
 
@@ -229,7 +234,7 @@ class CouponValidityService
         }
 
         // check same ip restriction
-        if ($coupon->same_ip_limit && !in_array("ip_address", $skip)) {
+        if ($coupon->same_ip_limit && $coupon->same_ip_limit > 0 && !in_array("ip_address", $skip)) {
             if (empty($ipaddress)) {
                 throw new CouponException("Coupon apply failed! Not found any IP address");
             }

@@ -154,7 +154,7 @@ class CouponValidityService
     /**
      * Check coupon validity
      *
-     * @param int $couponId
+     * @param string $couponCode
      * @param float $amount
      *
      * @param string $userId
@@ -164,42 +164,54 @@ class CouponValidityService
      * @return array
      * @throws CouponException
      */
-    public function validity($couponId, float $amount, string $userId, string $deviceName = null, string $ipaddress = null)
+    public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null)
     {
-        $coupon = Coupon::query()->find($couponId);
+        $coupon = Coupon::query()->where("code", $couponCode)->first();
 
         if (!$coupon) {
             throw new CouponException("Invalid coupon code!", 500);
         }
 
-        if ($coupon->start_date >= Carbon::today()->toDateTimeString() || $coupon->end_date < Carbon::today()->toDateTimeString()) {
+
+        // check coupon start date validity
+        if ($coupon->start_date > Carbon::today()->toDateTimeString()) {
+            throw new CouponException("Coupon apply failed! Invalid coupon code.", 500);
+        }
+
+        // check coupon end date validity
+        if ($coupon->end_date && $coupon->end_date < Carbon::today()->toDateTimeString()) {
             throw new CouponException("Coupon apply failed! This coupon has expired.", 500);
         }
 
-        if ($coupon->use_limit_per_user) {
+        // check coupon per user use limitation
+        if ($coupon->use_limit_per_user && $coupon->use_limit_per_user > 0) {
             $couponHistories = $coupon->couponHistories->where("user_id", $userId);
             if ($couponHistories && $couponHistories->count() == $coupon->use_limit_per_user) {
-                throw new CouponException("Coupon apply failed! You have exceeded the usage limit.", 500);
+                throw new CouponException("Coupon apply failed! You have overcome the usage limit.", 500);
             }
         }
 
+        // check total coupon applied limitation
         if ($coupon->use_limit) {
             if ($coupon->couponHistories->count() && $coupon->couponHistories->count() == $coupon->use_limit) {
-                throw new CouponException("Coupon apply failed! Because of exceeding the usage limit.", 500);
+                throw new CouponException("The coupon apply failed! Because of overcoming the total usage limit.", 500);
             }
         }
 
+        // check minimum order amount to applied  this coupon
         if ($coupon->minimum_spend && $coupon->minimum_spend > $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon minimum {$coupon->minimum_spend} amount is required", 500);
         }
 
+        // check maximum order amount to applied  this coupon
         if ($coupon->maximum_spend && $coupon->maximum_spend < $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon maximum {$coupon->minimum_spend} amount is required", 500);
         }
 
+        // check coupon code using device
         if ($coupon->use_device) {
             if (empty($deviceName)) {
-                throw new CouponException("Coupon apply failed! Not found any device name");
+                throw new CouponException("Coupon apply failed! Not found any device name.");
             }
 
             if ($coupon->use_device != $deviceName) {
@@ -207,6 +219,7 @@ class CouponValidityService
             }
         }
 
+        // check same ip restriction
         if ($coupon->same_ip_limit) {
             if (empty($ipaddress)) {
                 throw new CouponException("Coupon apply failed! Not found any IP address");
@@ -222,6 +235,7 @@ class CouponValidityService
             }
         }
 
+        // calculate discount amount
         $discount_amount = 0;
         if ($coupon->type == 'fixed') {
             $discount_amount = floatval($coupon->amount);
@@ -231,7 +245,9 @@ class CouponValidityService
         }
 
         return [
+            "id"                       => $coupon->id,
             "coupon_code"              => $coupon->code,
+            "object_type"              => $coupon->object_type,
             "type"                     => $coupon->type,
             "amount"                   => $coupon->amount,
             "discount_amount"          => $discount_amount,

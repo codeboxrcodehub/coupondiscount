@@ -96,7 +96,6 @@ class CouponService extends CouponValidityService
             ]);
     }
 
-
     /**
      * Coupon information update update
      *
@@ -187,20 +186,21 @@ class CouponService extends CouponValidityService
         $orderId    = $data["order_id"];
         $deviceName = isset($data['device_name']) ? $data['device_name'] : null;
         $ipaddress  = isset($data['ip_address']) ? $data['ip_address'] : null;
+        $skipFields = isset($data['skip']) ? $data['skip'] : [];
 
         // check applied coupon code code validity
-        $couponValidity = $this->validity($code, $amount, $userId, $deviceName, $ipaddress);
+        $couponValidity = $this->validity($code, $amount, $userId, $deviceName, $ipaddress, $skipFields);
 
         if (isset($couponValidity->id) && $couponValidity->id) {
             try {
 
-                $discountAmount = isset($couponValidity["discount_amount"]) ? $couponValidity["discount_amount"] : 0;
+                $discountAmount = isset($couponValidity->discount_amount) ? $couponValidity->discount_amount : 0;
 
                 $couponHistory = $this->addHistory([
                     "user_id"         => $userId,
-                    "coupon_id"       => $couponValidity['id'],
+                    "coupon_id"       => $couponValidity->id,
                     "order_id"        => $orderId,
-                    "object_type"     => $couponValidity['object_type'],
+                    "object_type"     => $couponValidity->object_type,
                     "discount_amount" => $discountAmount,
                     "user_ip"         => $ipaddress,
                 ]);
@@ -220,7 +220,7 @@ class CouponService extends CouponValidityService
      * @param array $data
      *
      * @return Builder|Model
-     * @throws CouponHistoryValidationException|CouponException|CouponValidationException
+     * @throws CouponHistoryValidationException|CouponException|CouponValidationException|\Throwable
      */
     public function addHistory(array $data)
     {
@@ -267,6 +267,35 @@ class CouponService extends CouponValidityService
             }
             throw new CouponException($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * Coupon history list by eloquent ORM
+     *
+     * @return Builder
+     */
+    public function history()
+    {
+        return CouponHistory::query();
+    }
+
+    /**
+     * Coupon history delete
+     *
+     * @param int $historyId
+     *
+     * @return bool|mixed|null
+     * @throws CouponException
+     */
+    public function historyDelete($historyId)
+    {
+        $history = CouponHistory::query()->find($historyId);
+
+        if (!$history) {
+            throw new CouponException("Coupon history not found");
+        }
+
+        return $history->delete();
     }
 
 }

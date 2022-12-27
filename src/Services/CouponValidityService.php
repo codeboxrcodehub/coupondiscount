@@ -158,15 +158,24 @@ class CouponValidityService
      * @param float $amount
      *
      * @param string $userId
-     * @param string|null $ipaddress
      * @param string|null $deviceName
+     *
+     * @param string|null $ipaddress
+     * @param array $skip
      *
      * @return array|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
      * @throws CouponException
      */
-    public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null)
+    public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null, array $skip = [])
     {
-        $coupon = Coupon::query()->where("code", $couponCode)->first();
+        $coupon = Coupon::query()
+            ->where("code", $couponCode)
+            ->withCount([
+                "couponHistories as user_use_coupon" => function ($q) use ($userId) {
+                    $q->selectRaw("COUNT(*)")->where('user_id', $userId);
+                }
+            ])
+            ->first();
 
         if (!$coupon) {
             throw new CouponException("Invalid coupon code!", 500);
@@ -209,7 +218,7 @@ class CouponValidityService
         }
 
         // check coupon code using device
-        if ($coupon->use_device) {
+        if ($coupon->use_device && !in_array("device_name", $skip)) {
             if (empty($deviceName)) {
                 throw new CouponException("Coupon apply failed! Not found any device name.");
             }
@@ -220,7 +229,7 @@ class CouponValidityService
         }
 
         // check same ip restriction
-        if ($coupon->same_ip_limit) {
+        if ($coupon->same_ip_limit && !in_array("ip_address", $skip)) {
             if (empty($ipaddress)) {
                 throw new CouponException("Coupon apply failed! Not found any IP address");
             }

@@ -161,7 +161,7 @@ class CouponValidityService
      * @param string|null $ipaddress
      * @param string|null $deviceName
      *
-     * @return array
+     * @return array|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
      * @throws CouponException
      */
     public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null)
@@ -244,15 +244,9 @@ class CouponValidityService
             $discount_amount     = ($discount_percentage / 100) * floatval($amount);
         }
 
-        return [
-            "id"                       => $coupon->id,
-            "coupon_code"              => $coupon->code,
-            "object_type"              => $coupon->object_type,
-            "type"                     => $coupon->type,
-            "amount"                   => $coupon->amount,
-            "discount_amount"          => $discount_amount,
-            "use_with_multiple_coupon" => $coupon->multiple_use,
-        ];
+        $coupon->discount_amount = $discount_amount;
+
+        return $coupon;
 
     }
 

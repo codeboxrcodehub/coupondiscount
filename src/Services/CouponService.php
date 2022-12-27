@@ -191,7 +191,7 @@ class CouponService extends CouponValidityService
         // check applied coupon code code validity
         $couponValidity = $this->validity($code, $amount, $userId, $deviceName, $ipaddress);
 
-        if (count($couponValidity)) {
+        if (isset($couponValidity->id) && $couponValidity->id) {
             try {
 
                 $discountAmount = isset($couponValidity["discount_amount"]) ? $couponValidity["discount_amount"] : 0;

@@ -161,12 +161,13 @@ class CouponValidityService
      * @param string|null $deviceName
      *
      * @param string|null $ipaddress
+     * @param string $vendorId
      * @param array $skip
      *
      * @return array|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
      * @throws CouponException
      */
-    public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null, array $skip = [])
+    public function validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null, string $vendorId = null, array $skip = [])
     {
         $coupon = Coupon::query()
             ->where("code", $couponCode)
@@ -180,7 +181,6 @@ class CouponValidityService
         if (!$coupon) {
             throw new CouponException("Invalid coupon code!", 500);
         }
-
 
         // check coupon status
         if ($coupon->status != 1) {
@@ -246,6 +246,17 @@ class CouponValidityService
             $couponHistories = $coupon->couponHistories->where("user_ip", $ipaddress);
             if ($couponHistories && $coupon->same_ip_limit <= $couponHistories->count()) {
                 throw new CouponException("Sorry, there are lots of order happened from your ip location using this coupon, we are not accepting more orders from your ip location for this coupon.");
+            }
+        }
+
+        // check vendor restriction
+        if ($coupon->vendor_id && $coupon->vendor_id > 0 && !in_array("vendor_id", $skip)) {
+            if (empty($vendorId)) {
+                throw new CouponException("Coupon apply failed! Not found any vendor id");
+            }
+
+            if ($coupon->vendor_id != $vendorId) {
+                throw new CouponException("Coupon apply failed! This coupon can't apply other vendor");
             }
         }
 

@@ -256,7 +256,7 @@ class CouponValidityService
             }
 
             if ($coupon->vendor_id != $vendorId) {
-                throw new CouponException("Coupon apply failed! This coupon can't apply other vendor");
+                throw new CouponException("Coupon apply failed! This coupon can not be applied for this shop.");
             }
         }
 

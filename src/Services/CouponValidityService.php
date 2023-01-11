@@ -184,7 +184,7 @@ class CouponValidityService
 
         // check coupon status
         if ($coupon->status != 1) {
-            throw new CouponException("Coupon apply failed! Coupon code id deactivate.", 500);
+            throw new CouponException("Coupon apply failed. This coupon is inactive.", 500);
         }
 
         // check coupon start date validity

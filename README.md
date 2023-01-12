@@ -40,7 +40,7 @@ coupons and coupon_histories two db table are created.
 ```
 use Codeboxr\CouponDiscount\Facades\Coupon;
 Coupon::add([
-    'coupon_code'       => "",  // (required) Coupon code
+    'coupon_code'       => "", // (required) Coupon code
     'discount_type'     => "", // (required) coupon discount type. two type are accepted (1. percentage and 2. fixed)
     'discount_amount'   => "", // (required) discount amount or percentage value
     'start_date'        => "", // (required) coupon start date
@@ -57,7 +57,7 @@ Coupon::add([
 ]);
 ```
 
-`*** For Using Raw php or other framwork`
+`*** For Using Raw php or other php framwork`
 
 ```
 use Codeboxr\CouponDiscount\Services\CouponService;
@@ -70,7 +70,7 @@ $copuon = new CouponService([
 ]);
 
 $copuon->add([
-    'coupon_code'       => "",  // (required) Coupon code
+    'coupon_code'       => "", // (required) Coupon code
     'discount_type'     => "", // (required) coupon discount type. two type are accepted (1. percentage and 2. fixed)
     'discount_amount'   => "", // (required) discount amount or percentage value
     'start_date'        => "", // (required) coupon start date

@@ -219,7 +219,7 @@ class CouponValidityService
 
         // check maximum order amount to applied  this coupon
         if ($coupon->maximum_spend > 0 && $coupon->maximum_spend < $amount) {
-            throw new CouponException("Invalid Amount! To apply this coupon maximum {$coupon->minimum_spend} amount is required", 500);
+            throw new CouponException("Invalid Amount! To apply this coupon maximum {$coupon->maximum_spend} amount is required", 500);
         }
 
         // check coupon code using device

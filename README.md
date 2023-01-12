@@ -33,6 +33,11 @@ coupons and coupon_histories two db table are created.
 
 `Note:` If you are using raw PHP or other PHP framework you can have to import `copuondiscount/database/sql` SQL file manually in your database.
 
+| Action Name   | Method      | Explanation                                                                  |
+| ------------- | ----------- | ---------------------------------------------------------------------------- |
+| Create coupon | add($array) | Create coupon code by add method it taken a array. array formate given below |
+|               |
+
 ### 1. Create new coupon
 
 `*** For Using Laravel Application`
@@ -85,5 +90,51 @@ $copuon->add([
     'multiple_use'      => "", // (optional) you can check manually by this multiple coupon code use or not
     'vendor_id'         => "" // (optional) if coupon code use specific shop or vendor
 ]);
+
+```
+
+### 2. Update coupon
+
+`*** For Using Laravel Application`
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+Coupon::update([
+    'coupon_code'       => "", // (required) Coupon code
+    'discount_type'     => "", // (required) coupon discount type. two type are accepted (1. percentage and 2. fixed)
+    'discount_amount'   => "", // (required) discount amount or percentage value
+    'start_date'        => "", // (required) coupon start date
+    'end_date'          => "", // (required) coupon end date
+    'status'            => "", // (required) two status are accepted. (for active 1 and for inactive 0)
+    'minimum_spend'     => "", // (optional) for apply this coupon minimum spend amount. if set empty then it's take unlimited
+    'maximum_spend'     => "", // (optional) for apply this coupon maximum spend amount. if set empty then it's take unlimited
+    'use_limit'         => "", // (optional) how many times are use this coupon. if set empty then it's take unlimited
+    'use_same_ip_limit' => "", // (optional) how many times are use this coupon in same ip address. if set empty then it's take unlimited
+    'user_limit'        => "", // (optional) how many times are use this coupon a user. if set empty then it's take unlimited
+    'use_device'        => "", // (optional) This coupon can be used on any device
+    'multiple_use'      => "", // (optional) you can check manually by this multiple coupon code use or not
+    'vendor_id'         => "" // (optional) if coupon code use specific shop or vendor
+], $couponId);
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->update([
+    'coupon_code'       => "", // (required) Coupon code
+    'discount_type'     => "", // (required) coupon discount type. two type are accepted (1. percentage and 2. fixed)
+    'discount_amount'   => "", // (required) discount amount or percentage value
+    'start_date'        => "", // (required) coupon start date
+    'end_date'          => "", // (required) coupon end date
+    'status'            => "", // (required) two status are accepted. (for active 1 and for inactive 0)
+    'minimum_spend'     => "", // (optional) for apply this coupon minimum spend amount. if set empty then it's take unlimited
+    'maximum_spend'     => "", // (optional) for apply this coupon maximum spend amount. if set empty then it's take unlimited
+    'use_limit'         => "", // (optional) how many times are use this coupon. if set empty then it's take unlimited
+    'use_same_ip_limit' => "", // (optional) how many times are use this coupon in same ip address. if set empty then it's take unlimited
+    'user_limit'        => "", // (optional) how many times are use this coupon a user. if set empty then it's take unlimited
+    'use_device'        => "", // (optional) This coupon can be used on any device
+    'multiple_use'      => "", // (optional) you can check manually by this multiple coupon code use or not
+    'vendor_id'         => "" // (optional) if coupon code use specific shop or vendor
+], $couponId);
 
 ```

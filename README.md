@@ -33,10 +33,11 @@ coupons and coupon_histories two db table are created.
 
 `Note:` If you are using raw PHP or other PHP framework you can have to import `copuondiscount/database/sql` SQL file manually in your database.
 
-| Action Name   | Method      | Explanation                                                                  |
-| ------------- | ----------- | ---------------------------------------------------------------------------- |
-| Create coupon | add($array) | Create coupon code by add method it taken a array. array formate given below |
-|               |
+| Action Name   | Method                   | Explanation                                                                                                                                                                                      |
+| ------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Create coupon | add($array)              | Create coupon code by add() method it taken a array. Array formate given below                                                                                                                   |
+| Update coupon | update($array,$couponId) | Coupon Update by update() method it's taken two parameter first parameter is an array and second parameter is coupon id                                                                          |
+| Copuon List   | list()                   | Fetch coupon list by list() method. You can chain any operation in Eluquarant after this method. For example: `list()->where('status',1)-.get();`,`list()->take(5)->get()`,`list()->first()` etc |
 
 ### 1. Create new coupon
 

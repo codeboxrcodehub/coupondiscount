@@ -200,14 +200,14 @@ class CouponValidityService
         // check coupon per user use limitation
         if ($coupon->use_limit_per_user && $coupon->use_limit_per_user > 0) {
             $couponHistories = $coupon->couponHistories->where("user_id", $userId);
-            if ($couponHistories && $couponHistories->count() == $coupon->use_limit_per_user) {
+            if ($couponHistories && $couponHistories->count() >= $coupon->use_limit_per_user) {
                 throw new CouponException("Coupon apply failed! You have overcome the usage limit.", 500);
             }
         }
 
         // check total coupon applied limitation
         if ($coupon->use_limit && $coupon->use_limit > 0) {
-            if ($coupon->couponHistories->count() && $coupon->couponHistories->count() == $coupon->use_limit) {
+            if ($coupon->couponHistories->count() && $coupon->couponHistories->count() >= $coupon->use_limit) {
                 throw new CouponException("The coupon apply failed! Because of overcoming the total usage limit.", 500);
             }
         }

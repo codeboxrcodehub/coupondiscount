@@ -33,12 +33,16 @@ coupons and coupon_histories two db table are created.
 
 `Note:` If you are using raw PHP or other PHP framework you can have to import `copuondiscount/database/sql` SQL file manually in your database.
 
-| Action Name       | Method                   | Explanation                                                                                                                                                                                      |
-| -------------     | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Create coupon     | add($array)              | Create coupon code by add() method it taken a array. Array formate given below                                                                                                                   |
-| Update coupon     | update($array,$couponId) | Coupon Update by update() method it's taken two parameter first parameter is an array and second parameter is coupon id                                                                          |
-| Coupon List       | list()                   | Fetch coupon list by list() method. You can chain any operation in Eluquarant after this method. For example: `list()->where('status',1)->get();`,`list()->take(5)->get();`,`list()->first();` etc |
-| Coupon Validity   | validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null, string $vendorId = null)   | check coupon code validity by validity() method. It's take 6 parameter 3 parameter are required. 1st parameter is coupon code,second parameter is total amount,third parameter is user id,fourth parameter (optional) device name,fifth parameter (optional) is IP address and sixth parameter (optional) is vendor id or shop id |
+| Action Name         | Method                   | Explanation                                                                                                                                                                                      |
+| -------------       | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Create Coupon       | add($array)              | Create coupon code by add() method it taken a array. Array formate given below                                                                                                                   |
+| Update Coupon       | update($array,$couponId) | Coupon Update by update() method it's taken two parameter first parameter is an array and second parameter is coupon id                                                                          |
+| Remove Coupon       | remove($couponId)        | Coupon Remove by remove() method it's taken one parameter. Parameter is Coupon id                                                                        |
+| Coupon List         | list()                   | Fetch coupon list by list() method. You can chain any operation in Eluquarant after this method. For example: `list()->where('status',1)->get();`,`list()->take(5)->get();`,`list()->first();` etc |
+| Coupon Validity     | validity($couponCode, float $amount, string $userId, string $deviceName = null, string $ipaddress = null, string $vendorId = null)   | check coupon code validity by validity() method. It's take 6 parameter 3 parameter are required. 1st parameter is coupon code,second parameter is total amount,third parameter is user id,fourth parameter (optional) device name,fifth parameter (optional) is IP address and sixth parameter (optional) is vendor id or shop id |
+| Coupon Apply        | apply($array)            | Apply coupon in a cart amount by apply() method. apply method taken one parameter is array, example given below |
+| Coupon History List | history()                | Fetch coupon history list by history() method. You can chain any operation in Eluquarant after this method. For example: `history()->where('user_id',1)->get();`,`history()->take(5)->get();`,`history()->first();` etc |
+| Remove History      | historyDelete($historyId)| Coupon History Remove by historyDelete() method it's taken one parameter. Parameter is Coupon history id                                                                        |
 
 ### 1. Create new coupon
 
@@ -60,7 +64,7 @@ Coupon::add([
     'user_limit'        => "", // (optional) how many times are use this coupon a user. if set empty then it's take unlimited
     'use_device'        => "", // (optional) This coupon can be used on any device
     'multiple_use'      => "", // (optional) you can check manually by this multiple coupon code use or not
-    'vendor_id'         => "" // (optional) if coupon code use specific shop or vendor
+    'vendor_id'         => ""  // (optional) if coupon code use specific shop or vendor
 ]);
 ```
 
@@ -139,4 +143,112 @@ $copuon->update([
     'vendor_id'         => "" // (optional) if coupon code use specific shop or vendor
 ], $couponId);
 
+```
+
+### 3. Remove coupon
+
+`*** For Using Laravel Application`
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::remove($couponId)
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->remove($couponId);
+```
+
+### 4. Coupon List
+
+`*** For Using Laravel Application`
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::list()->get();
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->list()->get();
+```
+
+### 5. Coupon validity check
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::validity("CBX23",1200,1,"app","192.168.0.1",5);
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->validity("CBX23",1200,1,"app","192.168.0.1",5);
+```
+
+``note: validity() method first 3 method parameter are required others optional``
+
+### 6. Coupon apply
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::apply([
+    "code"        => "", // coupon code. (required)
+    "amount"      => "", // total amount to apply coupon. must be a numberic number (required)
+    "user_id"     => "", // user id (required)
+    "order_id"    => "", // order id (required)
+    "device_name" => "", // device name (optional)
+    "ip_address"  => "", // ip address (optional)
+]);
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->apply([
+    "code"        => "", // coupon code. (required)
+    "amount"      => "", // total amount to apply coupon. must be a numberic number (required)
+    "user_id"     => "", // user id (required)
+    "order_id"    => "", // order id (required)
+    "device_name" => "", // device name (optional)
+    "ip_address"  => "", // ip address (optional)
+]);
+```
+
+### 7. Coupon history list
+
+`*** For Using Laravel Application`
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::history()->get();
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->history()->get();
+```
+
+### 8. Delete coupon history
+
+`*** For Using Laravel Application`
+
+```
+use Codeboxr\CouponDiscount\Facades\Coupon;
+
+Coupon::historyDelete($historyId)
+```
+
+`*** For Using Raw php or other php framwork`
+
+```
+$copuon->historyDelete($historyId);
 ```

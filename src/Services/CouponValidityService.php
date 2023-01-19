@@ -46,7 +46,7 @@ class CouponValidityService
             throw new CouponValidationException("user_limit accepted integer value", 422);
         }
 
-    }
+    }//end method validation
 
     /**
      * Coupon update validation
@@ -81,7 +81,7 @@ class CouponValidityService
             throw new CouponValidationException("user_limit accepted integer value", 422);
         }
 
-    }
+    }//end method updateValidation
 
     /**
      * Coupon history validation
@@ -98,7 +98,7 @@ class CouponValidityService
 
         $requiredFields = ['user_id', 'coupon_id', 'order_id', 'discount_amount'];
         $this->fieldValidation($array, $requiredFields);
-    }
+    }//end method historyValidation
 
     /**
      * Apply coupon validation
@@ -118,7 +118,7 @@ class CouponValidityService
         }
 
         $this->fieldValidation($array, ["code", "amount", "user_id", "order_id"]);
-    }
+    }//end method applyValidation
 
     /**
      * Array data validation
@@ -149,20 +149,19 @@ class CouponValidityService
                 throw new CouponValidationException("$filed is required", 422);
             }
         }
-    }
+    }//end method fieldValidation
 
     /**
      * Check coupon validity
      *
-     * @param string $couponCode
-     * @param float $amount
+     * @param string $couponCode {coupon code}
+     * @param float $amount (cart sub total amount)
      *
-     * @param string $userId
-     * @param string|null $deviceName
-     *
-     * @param string|null $ipaddress
-     * @param string $vendorId
-     * @param array $skip
+     * @param string $userId {user id}
+     * @param string|null $deviceName {device ref, example: web, android, ios etc, default empty}
+     * @param string|null $ipaddress {ip address }
+     * @param string $vendorId {vendor id/shop id}
+     * @param array $skip {some functionality need to skip from different scope while applying the coupon}
      *
      * @return array|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
      * @throws CouponException
@@ -178,26 +177,27 @@ class CouponValidityService
             ])
             ->first();
 
+        //01.Check if coupon exists
         if (!$coupon) {
             throw new CouponException("Invalid coupon code!", 500);
         }
 
-        // check coupon status
+        //02. Check coupon status
         if ($coupon->status != 1) {
             throw new CouponException("Coupon apply failed. This coupon is inactive.", 500);
         }
 
-        // check coupon start date validity
+        //03. Check coupon start date validity
         if ($coupon->start_date > Carbon::today()->toDateTimeString()) {
             throw new CouponException("Coupon apply failed! Invalid coupon code.", 500);
         }
 
-        // check coupon end date validity
+        //04. Check coupon end date validity
         if ($coupon->end_date && $coupon->end_date < Carbon::today()->toDateTimeString()) {
             throw new CouponException("Coupon apply failed! This coupon has expired.", 500);
         }
 
-        // check coupon per user use limitation
+        //05. check coupon per user use limitation
         if ($coupon->use_limit_per_user && $coupon->use_limit_per_user > 0) {
             $couponHistories = $coupon->couponHistories->where("user_id", $userId);
             if ($couponHistories && $couponHistories->count() >= $coupon->use_limit_per_user) {
@@ -205,19 +205,19 @@ class CouponValidityService
             }
         }
 
-        // check total coupon applied limitation
+        //06. Check total coupon applied limitation
         if ($coupon->use_limit && $coupon->use_limit > 0) {
             if ($coupon->couponHistories->count() && $coupon->couponHistories->count() >= $coupon->use_limit) {
                 throw new CouponException("The coupon apply failed! Because of overcoming the total usage limit.", 500);
             }
         }
 
-        // check minimum order amount to applied  this coupon
+        //07. Check minimum order amount to applied  this coupon
         if ($coupon->minimum_spend > 0 && $coupon->minimum_spend > $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon minimum {$coupon->minimum_spend} amount is required", 500);
         }
 
-        // check maximum order amount to applied  this coupon
+        //08. Check maximum order amount to applied  this coupon
         if ($coupon->maximum_spend > 0 && $coupon->maximum_spend < $amount) {
             throw new CouponException("Invalid Amount! To apply this coupon maximum {$coupon->maximum_spend} amount is required", 500);
         }
@@ -263,16 +263,15 @@ class CouponValidityService
         // calculate discount amount
         $discount_amount = 0;
         if ($coupon->type == 'fixed') {
-            $discount_amount = floatval($coupon->amount);
+            $discount_amount += floatval($coupon->amount);
         } else {
             $discount_percentage = floatval($coupon->amount);
-            $discount_amount     = ($discount_percentage / 100) * floatval($amount);
+            $discount_amount     += ($discount_percentage / 100) * floatval($amount);
         }
 
         $coupon->discount_amount = $discount_amount;
 
         return $coupon;
+    }//end method validity
 
-    }
-
-}
+}//end class CouponValidityService

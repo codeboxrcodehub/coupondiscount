@@ -263,4 +263,4 @@ Contributions to the Coupon Discount package are welcome. Please note the follow
 
 Coupon Discount package is licensed under the [MIT License](http://opensource.org/licenses/MIT).
 
-Copyright 2022 [Codeboxr](https://codeboxr.com)
+Copyright 2023 [Codeboxr](https://codeboxr.com)

@@ -92,7 +92,8 @@ class CouponService extends CouponValidityService
                 "use_limit_per_user" => isset($array['user_limit']) ? $array['user_limit'] : null,
                 "use_device"         => isset($array['use_device']) ? $array['use_device'] : null,
                 "multiple_use"       => isset($array['multiple_use']) ? $array['multiple_use'] : "no",
-                "status"             => isset($array['status']) ? $array['status'] : 0
+                "status"             => isset($array['status']) ? $array['status'] : 0,
+                "vendor_id"          => isset($array['vendor_id']) ? $array['vendor_id'] : null,
             ]);
     }
 
@@ -135,6 +136,7 @@ class CouponService extends CouponValidityService
             "use_device"         => isset($array['use_device']) ? $array['use_device'] : $coupon->use_device,
             "multiple_use"       => isset($array['multiple_use']) ? $array['multiple_use'] : $coupon->multiple_use,
             "status"             => isset($array['status']) ? $array['status'] : $coupon->status
+            "vendor_id"          => isset($array['vendor_id']) ? $array['vendor_id'] : $coupon->vendor_id,
         ];
 
         $coupon->update($data);
